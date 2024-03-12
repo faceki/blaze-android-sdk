@@ -36,6 +36,7 @@ class ImageQualityViewModel(
                     _screenState.value = ScreenState(
                         isLoading = false, isSuccess = false, errorMessage = resource.message
                     )
+                    AppConfig.removeLastDocument()
                 }
 
                 is Resource.Success -> {

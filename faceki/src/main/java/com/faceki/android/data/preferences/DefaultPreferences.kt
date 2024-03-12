@@ -18,22 +18,6 @@ internal class DefaultPreferences(
         return sharedPref.getString(Preferences.KEY_TOKEN, null)
     }
 
-    override fun saveTokenType(tokenType: String) {
-        sharedPref.edit().putString(Preferences.KEY_TOKEN_TYPE, tokenType).apply()
-    }
-
-    override fun getTokenType(): String? {
-        return sharedPref.getString(Preferences.KEY_TOKEN_TYPE, null)
-    }
-
-    override fun saveTokenExpireTime(seconds: Int) {
-        sharedPref.edit().putInt(Preferences.KEY_TOKEN_EXPIRE_TIME, seconds).apply()
-    }
-
-    override fun getTokenExpireTime(): Int {
-        return sharedPref.getInt(Preferences.KEY_TOKEN_EXPIRE_TIME, -1)
-    }
-
     override fun saveTokenTimestamp(millsInSeconds: Long) {
         sharedPref.edit().putLong(Preferences.KEY_TOKEN_TIMESTAMP, millsInSeconds).apply()
     }

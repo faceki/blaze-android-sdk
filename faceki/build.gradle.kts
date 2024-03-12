@@ -67,22 +67,22 @@ dependencies {
     //Lottie
     implementation("com.airbnb.android:lottie:6.2.0")
 
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.0")
 
     // Concurrent library for asynchronous coroutines
     implementation("androidx.concurrent:concurrent-futures-ktx:1.1.0")
 
     // CameraX core library
-    implementation("androidx.camera:camera-core:1.3.1")
+    implementation("androidx.camera:camera-core:1.3.2")
 
     // CameraX Camera2 extensions
-    implementation("androidx.camera:camera-camera2:1.3.1")
+    implementation("androidx.camera:camera-camera2:1.3.2")
 
     // CameraX Lifecycle library
-    implementation("androidx.camera:camera-lifecycle:1.3.1")
+    implementation("androidx.camera:camera-lifecycle:1.3.2")
 
     // CameraX View class
-    implementation("androidx.camera:camera-view:1.3.1")
+    implementation("androidx.camera:camera-view:1.3.2")
 
     //WindowManager
     implementation("androidx.window:window:1.2.0")
@@ -98,8 +98,8 @@ dependencies {
     implementation("androidx.recyclerview:recyclerview:1.3.2")
 
     //Navigation
-    implementation("androidx.navigation:navigation-fragment-ktx:2.7.6")
-    implementation("androidx.navigation:navigation-ui-ktx:2.7.6")
+    implementation("androidx.navigation:navigation-fragment-ktx:2.7.7")
+    implementation("androidx.navigation:navigation-ui-ktx:2.7.7")
 }
 
 
@@ -111,7 +111,7 @@ afterEvaluate {
 
                 groupId = "com.github.faceki"
                 artifactId = "blaze-android-sdk"
-                version = "1.0"
+                version = "1.1"
             }
         }
     }

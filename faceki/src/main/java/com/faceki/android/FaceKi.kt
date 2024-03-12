@@ -16,7 +16,7 @@ object FaceKi {
         clientId: String,
         clientSecret: String,
         workflowId: String,
-        recordIdentifier: String?=null,
+        recordIdentifier: String? = null,
         kycResponseHandler: KycResponseHandler
     ) {
         context.runOnUiThread {
@@ -30,8 +30,12 @@ object FaceKi {
                 throw IllegalArgumentException("Invalid workflow Id")
             }
 
+            AppModule.clear()
+            AppConfig.clear()
+
             AppModule.initialize(context.application)
             FileManager.initialize(context.application)
+            FileManager.deleteAllFiles()
             AppConfig.clientId = clientId
             AppConfig.clientSecret = clientSecret
             AppConfig.workflowId = workflowId

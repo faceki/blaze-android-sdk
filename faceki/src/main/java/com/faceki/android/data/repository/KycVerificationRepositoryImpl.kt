@@ -87,20 +87,10 @@ internal class KycVerificationRepositoryImpl(
                     ?.getAsJsonPrimitive("decision")?.asString == "ACCEPTED"
 
 
-
-                if (!status) {
-                    return Resource.Success(
-                        VerificationResponse(
-                            responseCode = Constants.INVALID_RESPONSE_CODE,
-                            errorMessage = "Couldn't verify Kyc"
-                        )
-                    )
-                }
-
                 when (responseCode) {
                     HttpStatusCodes.OK -> {
 
-                        if (isAccepted) {
+                        if (isAccepted && status) {
                             Resource.Success(
                                 VerificationResponse(
                                     responseCode = KYCErrorCodes.SUCCESS,

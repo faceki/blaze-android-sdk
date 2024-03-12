@@ -41,7 +41,7 @@ internal abstract class BaseFragment<T : ViewBinding>(
         _binding = null
     }
 
-    abstract fun setupViews()
+    open fun setupViews() {}
     open fun setupThemes() {}
 
     open fun setupClickListeners() {}

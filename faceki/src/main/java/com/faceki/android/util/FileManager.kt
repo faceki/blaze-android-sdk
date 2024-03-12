@@ -1,6 +1,8 @@
 package com.faceki.android.util
 
 import android.app.Application
+import android.util.Log
+import com.faceki.android.di.AppConfig
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -42,11 +44,18 @@ object FileManager {
             return@withContext file
         }
 
-    // Method to delete a specific file
-    fun deleteSpecificFile(fileName: String): Boolean {
-        val folder = ensureFolderExists()
-        val file = File(folder, fileName)
-        return if (file.exists()) file.delete() else false
+    // Method to delete a file
+    fun deleteFile(filePath: String?) {
+        try {
+            filePath?.let { File(it) }?.let { file ->
+                if (file.exists()) {
+                    file.delete()
+                }
+            }
+
+        } catch (e: Exception) {
+            e.localizedMessage?.let { Log.e(AppConfig.TAG, it) }
+        }
     }
 
     // Method to delete all files in the folder

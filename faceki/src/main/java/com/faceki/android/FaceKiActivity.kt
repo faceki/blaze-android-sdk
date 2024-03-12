@@ -14,9 +14,6 @@ internal class FaceKiActivity :
     override fun getNavControllerViewId(): Int = R.id.faceki_nav_host_fragment
 
     override fun setupViews() {
-    }
-
-    override fun setupNavigation() {
 
     }
 

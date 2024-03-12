@@ -10,14 +10,12 @@ import com.faceki.android.FaceKi
 import com.faceki.android.R
 import com.faceki.android.databinding.FragmentSplashBinding
 import com.faceki.android.di.AppConfig
-import com.faceki.android.di.AppModule
 import com.faceki.android.presentation.base.BaseFragment
 import com.faceki.android.presentation.rule.RuleViewModel
 import com.faceki.android.presentation.rule.RuleViewModelFactory
 import com.faceki.android.presentation.welcome.TokenViewModel
 import com.faceki.android.presentation.welcome.TokenViewModelFactory
 import com.faceki.android.util.Constants
-import com.faceki.android.util.FileManager
 import com.faceki.android.util.getColorIntOrNull
 import com.faceki.android.util.isNetworkNotConnected
 import com.faceki.android.util.isNotNull
@@ -44,13 +42,6 @@ internal class SplashFragment :
         RuleViewModelFactory()
     }
 
-    override fun setupViews() {
-        activity?.application?.let {
-            AppModule.initialize(it)
-            FileManager.initialize(it)
-            FileManager.deleteAllFiles()
-        }
-    }
 
     override fun onResume() {
         super.onResume()
@@ -81,6 +72,10 @@ internal class SplashFragment :
                 }
             }
         }
+    }
+
+    override fun setupViews() {
+
     }
 
     override fun setupThemes() {

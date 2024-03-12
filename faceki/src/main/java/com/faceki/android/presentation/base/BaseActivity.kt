@@ -61,12 +61,12 @@ internal abstract class BaseActivity<T : ViewBinding>(
         super.onBackPressed()
     }
 
-    abstract fun getNavControllerViewId(): Int?
+    open fun getNavControllerViewId(): Int? = null
 
 
-    abstract fun setupViews()
+    open fun setupViews() {}
 
-    abstract fun setupNavigation()
+    open fun setupNavigation() {}
 
     open fun setupClickListeners() {}
 

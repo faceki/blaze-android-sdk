@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class TokenViewModel constructor(
+class TokenViewModel(
     private val tokenRepository: TokenRepository
 ) : ViewModel() {
 
@@ -49,14 +49,6 @@ class TokenViewModel constructor(
                 }
 
             }
-        }
-
-
-        fun hasTokenExpired(): Boolean {
-            return tokenRepository.getTokenTimestamp().hasTokenExpired(
-                token = tokenRepository.getBearerToken(),
-                expiresInSec = tokenRepository.getTokenExpireTime()
-            )
         }
 
     }

@@ -7,7 +7,6 @@ import com.faceki.android.domain.preferences.Preferences
 import com.faceki.android.domain.repository.TokenRepository
 import com.faceki.android.util.KYCErrorCodes
 import com.faceki.android.util.Resource
-import com.faceki.android.util.hasTokenExpired
 import retrofit2.HttpException
 import java.io.IOException
 
@@ -16,17 +15,6 @@ internal class TokenRepositoryImpl(
 ) : TokenRepository {
     override suspend fun getBearerToken(clientId: String, clientSecret: String): Resource<String> {
         return try {
-
-
-            val token = preferences.getToken()
-            val hasExpired = preferences.getTokenTimestamp().hasTokenExpired(
-                token = token,
-                expiresInSec = preferences.getTokenExpireTime()
-            )
-
-            if (!hasExpired) {
-                return Resource.Success(token)
-            }
 
             val response = faceKiApi.generateToken(
                 clientId = clientId, clientSecret = clientSecret
@@ -40,8 +28,6 @@ internal class TokenRepositoryImpl(
                         body.data?.let { data ->
                             val accessToken = data.accessToken ?: ""
                             preferences.saveToken(accessToken)
-                            preferences.saveTokenType(data.tokenType ?: "")
-                            preferences.saveTokenExpireTime(data.expiresIn)
                             preferences.saveTokenTimestamp(System.currentTimeMillis())
 
                             Resource.Success(accessToken)
@@ -76,12 +62,6 @@ internal class TokenRepositoryImpl(
             )
         }
     }
-
-    override fun getBearerToken(): String? = preferences.getToken()
-
-    override fun getTokenType(): String? = preferences.getTokenType()
-
-    override fun getTokenExpireTime(): Int = preferences.getTokenExpireTime()
 
     override fun getTokenTimestamp(): Long = preferences.getTokenTimestamp()
 }

@@ -8,9 +8,5 @@ internal class TokenProviderImpl(
 ) : TokenProvider {
     override fun getToken(): String? = preferences.getToken()
 
-    override fun getTokenType(): String? = preferences.getTokenType()
-
-    override fun getTokenExpireTime(): Int = preferences.getTokenExpireTime()
-
     override fun getTokenTimestamp(): Long = preferences.getTokenTimestamp()
 }

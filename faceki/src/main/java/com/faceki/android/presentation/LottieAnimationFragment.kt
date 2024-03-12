@@ -3,7 +3,6 @@ package com.faceki.android.presentation
 import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
-import android.util.Log
 import android.view.KeyEvent
 import android.view.View
 import androidx.fragment.app.Fragment
@@ -16,12 +15,14 @@ import com.faceki.android.R
 import com.faceki.android.VerificationResult
 import com.faceki.android.databinding.FragmentLottieAnimationBinding
 import com.faceki.android.di.AppConfig
+import com.faceki.android.di.AppModule
 import com.faceki.android.presentation.base.BaseFragment
 import com.faceki.android.presentation.verification.KycVerificationViewModel
 import com.faceki.android.presentation.verification.KycVerificationViewModelFactory
 import com.faceki.android.presentation.welcome.TokenViewModel
 import com.faceki.android.presentation.welcome.TokenViewModelFactory
 import com.faceki.android.util.Constants
+import com.faceki.android.util.FileManager
 import com.faceki.android.util.KYCErrorCodes
 import com.faceki.android.util.asFile
 import com.faceki.android.util.getColorIntOrNull
@@ -79,10 +80,16 @@ internal class LottieAnimationFragment :
             }
         }
 
+        AppConfig.TAG
+        AppConfig.TAG
         lifecycleScope.launch {
             if (lottieAnimationType == LottieAnimationType.VERIFICATION_LOADING) {
                 getToken()
             } else {
+
+                AppConfig.clearAllDocuments()
+                FileManager.deleteAllFiles()
+
                 removeAllFragmentsExceptCurrent()
 
                 withContext(Dispatchers.IO) {
@@ -93,6 +100,8 @@ internal class LottieAnimationFragment :
                     json = verificationResponse,
                     result = VerificationResult.ResultOk
                 )
+
+                AppModule.clear()
             }
         }
     }
@@ -115,6 +124,7 @@ internal class LottieAnimationFragment :
                                 )
                             })
                     } else if (state.responseCode == KYCErrorCodes.PLEASE_TRY_AGAIN || state.responseCode == KYCErrorCodes.FACE_CROPPED || state.responseCode == KYCErrorCodes.FACE_TOO_CLOSED || state.responseCode == KYCErrorCodes.FACE_NOT_FOUND || state.responseCode == KYCErrorCodes.FACE_CLOSED_TO_BORDER || state.responseCode == KYCErrorCodes.FACE_TOO_SMALL || state.responseCode == KYCErrorCodes.POOR_LIGHT) {
+                        AppConfig.selfieImagePath=null
                         navController.previousBackStackEntry?.savedStateHandle?.set(
                             Constants.ARG_VERIFICATION_RESPONSE, state.errorMessage
                         )
