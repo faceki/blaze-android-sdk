@@ -84,9 +84,7 @@ internal class GettingStartedFragment :
                     showToast("Please connect to internet")
                     return
                 }
-                if (isLoading) {
-                    return
-                }
+
 
                 if (ruleData.isNotNull()) {
                     if (ruleData?.documentOptional.isTrue()) {

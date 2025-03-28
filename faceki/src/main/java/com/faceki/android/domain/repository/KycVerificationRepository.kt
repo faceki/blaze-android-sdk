@@ -8,6 +8,7 @@ import java.io.File
 interface KycVerificationRepository {
 
     suspend fun verifyKyc(
+        verificationLink:String,
         workflowId: String,
         recordIdentifier: String?,
         selfieImage: File,

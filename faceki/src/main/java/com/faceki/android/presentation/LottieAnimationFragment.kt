@@ -17,6 +17,8 @@ import com.faceki.android.databinding.FragmentLottieAnimationBinding
 import com.faceki.android.di.AppConfig
 import com.faceki.android.di.AppModule
 import com.faceki.android.presentation.base.BaseFragment
+import com.faceki.android.presentation.rule.RuleViewModel
+import com.faceki.android.presentation.rule.RuleViewModelFactory
 import com.faceki.android.presentation.verification.KycVerificationViewModel
 import com.faceki.android.presentation.verification.KycVerificationViewModelFactory
 import com.faceki.android.presentation.welcome.TokenViewModel
@@ -47,6 +49,10 @@ internal class LottieAnimationFragment :
 
     private val tokenViewModel: TokenViewModel by viewModels {
         TokenViewModelFactory()
+    }
+
+    private val rulesViewModel: RuleViewModel by viewModels {
+        RuleViewModelFactory()
     }
 
     private var token: String? = null
@@ -150,16 +156,11 @@ internal class LottieAnimationFragment :
         }
         lifecycleScope.launch {
             if (lottieAnimationType == LottieAnimationType.VERIFICATION_LOADING) {
-                tokenViewModel.screenState.flowWithLifecycle(
+                rulesViewModel.screenState.flowWithLifecycle(
                     lifecycle, Lifecycle.State.STARTED
                 ).collect { state ->
-                    if (state.isSuccess.isTrue() && state.token?.isNotBlank().isTrue()) {
-                        if (token == null || token != state.token) {
-                            token = state.token
-
                             verifyKycDocuments()
-                        }
-                    }
+
                 }
             }
         }
@@ -173,11 +174,7 @@ internal class LottieAnimationFragment :
                 activity?.onBackPressedDispatcher?.onBackPressed()
                 return@launch
             }
-            val clientId = AppConfig.clientId!!
-            val clientSecret = AppConfig.clientSecret!!
-            tokenViewModel.getBearerToken(
-                clientId = clientId, clientSecret = clientSecret
-            )
+
         }
     }
 

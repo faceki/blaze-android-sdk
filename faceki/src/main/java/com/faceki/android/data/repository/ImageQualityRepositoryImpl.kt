@@ -25,9 +25,7 @@ internal class ImageQualityRepositoryImpl(
 
             if (response.isSuccessful) {
 
-                if (body.objectsDetected.isNotEmpty() && body.liveNess?.message.equals(
-                        "passed", ignoreCase = true
-                    )
+                if (body.objectsDetected.isNotEmpty() && body.liveNess?.liveNessScore!! > 0.7
                 ) {
                     Resource.Success("passed")
                 } else {

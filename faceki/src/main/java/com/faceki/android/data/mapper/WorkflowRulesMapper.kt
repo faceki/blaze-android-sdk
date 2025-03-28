@@ -8,6 +8,8 @@ internal fun WorkflowRulesResponseResultDto.toRuleResponseData(): RuleResponseDa
     return RuleResponseData(
         id = id,
         companyId = companyId,
+
+        workflowId = workflowId,
         documentOptional = documentOptional,
         documents = documents
     )

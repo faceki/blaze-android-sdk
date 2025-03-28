@@ -13,21 +13,14 @@ object FaceKi {
     @JvmStatic
     fun startKycVerification(
         context: Activity,
-        clientId: String,
-        clientSecret: String,
-        workflowId: String,
+        verificationLink: String,
         recordIdentifier: String? = null,
         kycResponseHandler: KycResponseHandler
     ) {
         context.runOnUiThread {
-            if (clientId.isBlank()) {
-                throw IllegalArgumentException("Invalid client Id")
-            }
-            if (clientSecret.isBlank()) {
-                throw IllegalArgumentException("Invalid client secret")
-            }
-            if (workflowId.isBlank()) {
-                throw IllegalArgumentException("Invalid workflow Id")
+          
+            if (verificationLink.isBlank()) {
+                throw IllegalArgumentException("Verification Link Required")
             }
 
             AppModule.clear()
@@ -36,9 +29,8 @@ object FaceKi {
             AppModule.initialize(context.application)
             FileManager.initialize(context.application)
             FileManager.deleteAllFiles()
-            AppConfig.clientId = clientId
-            AppConfig.clientSecret = clientSecret
-            AppConfig.workflowId = workflowId
+       
+            AppConfig.verificationLink = verificationLink
             AppConfig.recordIdentifier = recordIdentifier
             AppConfig.kycResponseHandler = kycResponseHandler
 

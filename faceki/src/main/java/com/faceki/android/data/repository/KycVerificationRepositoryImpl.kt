@@ -28,6 +28,7 @@ internal class KycVerificationRepositoryImpl(
 ) : KycVerificationRepository {
 
     override suspend fun verifyKyc(
+        verificationLink: String,
         workflowId: String,
         recordIdentifier: String?,
         selfieImage: File,
@@ -36,7 +37,6 @@ internal class KycVerificationRepositoryImpl(
 
 
         return try {
-
 
             val multiPartDocs = mutableListOf<MultipartBody.Part>()
 
@@ -71,6 +71,7 @@ internal class KycVerificationRepositoryImpl(
 
             val response = faceKiApi.verifyKyc(
                 workflowId = createPartFromString(workflowId),
+                verificationLink = createPartFromString(verificationLink),
                 recordIdentifier = recordIdentifier?.let { createPartFromString(it) },
                 documents = multiPartDocs
             )

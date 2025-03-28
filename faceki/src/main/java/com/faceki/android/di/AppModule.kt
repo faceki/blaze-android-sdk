@@ -8,7 +8,6 @@ import com.faceki.android.data.preferences.DefaultPreferences
 import com.faceki.android.data.provider.TokenProviderImpl
 import com.faceki.android.data.remote.FaceKiApi
 import com.faceki.android.data.remote.ImageQualityApi
-import com.faceki.android.data.remote.interceptor.AuthInterceptor
 import com.faceki.android.data.repository.ImageQualityRepositoryImpl
 import com.faceki.android.data.repository.KycVerificationRepositoryImpl
 import com.faceki.android.data.repository.TokenRepositoryImpl
@@ -100,28 +99,14 @@ internal object AppModule {
         }
     }
 
-    private fun provideTokenProvider(preferences: Preferences = providePreferences()): TokenProvider {
-        return tokenProvider ?: synchronized(this) {
-            tokenProvider ?: run {
-                TokenProviderImpl(
-                    preferences = preferences
-                ).also {
-                    tokenProvider = it
-                }
-            }
-        }
-    }
 
-    private fun provideAuthInterceptor(tokenProvider: TokenProvider = provideTokenProvider()): AuthInterceptor {
-        return AuthInterceptor(
-            tokenProvider = tokenProvider
-        )
-    }
 
-    private fun provideOkHttpClient(authInterceptor: AuthInterceptor = provideAuthInterceptor()): OkHttpClient {
+
+
+    private fun provideOkHttpClient(): OkHttpClient {
         return OkHttpClient.Builder().connectTimeout(2, TimeUnit.MINUTES)
             .writeTimeout(2, TimeUnit.MINUTES).readTimeout(2, TimeUnit.MINUTES)
-            .addLoggingInterceptorIfInDevelopmentMode().addInterceptor(authInterceptor).build()
+            .addLoggingInterceptorIfInDevelopmentMode().build()
     }
 
     private fun provideOkHttpClientForImageQualityApi(): OkHttpClient {

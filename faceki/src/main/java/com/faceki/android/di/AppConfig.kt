@@ -10,13 +10,10 @@ object AppConfig {
     const val TAG = "FaceKi-SDK"
 
     @JvmStatic
-    var clientId: String? = null
-
-    @JvmStatic
-    var clientSecret: String? = null
-
-    @JvmStatic
     var workflowId: String? = null
+
+    @JvmStatic
+    var verificationLink: String? = null
 
     @JvmStatic
     var recordIdentifier: String? = null
@@ -91,9 +88,7 @@ object AppConfig {
 
     @JvmStatic
     fun clear() {
-        clientId = null
-        clientSecret = null
-        workflowId = null
+        verificationLink = null
         recordIdentifier = null
         selfieImagePath = null
         kycResponseHandler = null

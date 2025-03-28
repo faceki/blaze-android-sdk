@@ -14,7 +14,7 @@ internal data class ImageQualityResponseDto(
 @Keep
 internal data class LiveNess(
     @field:Json(name = "actual") val actual: Boolean? = null,
-    @field:Json(name = "livenessScore") val liveNessScore: String? = null,
+    @field:Json(name = "livenessScore") val liveNessScore: Double? = null,
     @field:Json(name = "message") val message: String? = null
 )
 

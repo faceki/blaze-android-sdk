@@ -17,7 +17,7 @@ internal class WorkflowRuleRepositoryImpl(
     private val faceKiApi: FaceKiApi, private val preferences: Preferences
 ) : WorkflowRuleRepository {
     override suspend fun getWorkflowRules(
-        workflowId: String,
+        verificationLink: String,
         fetchFromRemote: Boolean
     ): Resource<RuleResponseData> {
         return try {
@@ -25,9 +25,8 @@ internal class WorkflowRuleRepositoryImpl(
             if (!fetchFromRemote) {
                 return Resource.Success(preferences.getRuleResponse())
             }
-
             val response = faceKiApi.getWorkflowRules(
-                workflowId = workflowId
+                verificationLink = verificationLink
             )
             val body = response.body()!!
 
@@ -36,6 +35,7 @@ internal class WorkflowRuleRepositoryImpl(
                 when (body.code) {
                     HttpStatusCodes.OK -> {
                         val ruleResponse = body.result!!.toRuleResponseData()
+                        AppConfig.workflowId = ruleResponse.workflowId
                         preferences.saveRuleResponse(ruleResponse)
                         Resource.Success(ruleResponse)
                     }

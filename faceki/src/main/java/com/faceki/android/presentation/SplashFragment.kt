@@ -56,17 +56,10 @@ internal class SplashFragment :
             tokenViewModel.screenState.flowWithLifecycle(
                 lifecycle, Lifecycle.State.STARTED
             ).collect { state ->
-                if (state.isSuccess.isTrue() && state.token?.isNotBlank().isTrue()) {
-                    if (token == null) {
-                        observeRules()
-                        token = state.token
-                        isLoading = true
-                        ruleViewModel.getRules(fetchFromRemote = true)
-                    } else if (token != state.token) {
-                        token = state.token
-                        isLoading = true
-                        ruleViewModel.getRules(fetchFromRemote = true)
-                    }
+                if (!state.isSuccess.isTrue()) {
+                    observeRules()
+                    ruleViewModel.getRules(fetchFromRemote = true)
+
                 } else {
                     isLoading = false
                 }
@@ -94,11 +87,7 @@ internal class SplashFragment :
                 return@launch
             }
             isLoading = true
-            val clientId = AppConfig.clientId!!
-            val clientSecret = AppConfig.clientSecret!!
-            tokenViewModel.getBearerToken(
-                clientId = clientId, clientSecret = clientSecret
-            )
+
         }
     }
 

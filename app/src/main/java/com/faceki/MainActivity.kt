@@ -48,9 +48,7 @@ class MainActivity : AppCompatActivity() {
             )
             FaceKi.startKycVerification(
                 context = this@MainActivity,
-                clientId = TEST_CLIENT_ID,
-                clientSecret = TEST_CLIENT_SECRET,
-                workflowId = TEST_WORKFLOW_ID,
+                verificationLink = TEST_VERIFICATION_LINK,
                 recordIdentifier = TEST_RECORD_IDENTIFIER,
                 kycResponseHandler = kycResponseHandler
             )
@@ -58,10 +56,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     companion object {
-        private const val TEST_CLIENT_ID = ""
-        private const val TEST_RECORD_IDENTIFIER = ""
-        private const val TEST_CLIENT_SECRET =""
-        private const val TEST_WORKFLOW_ID = ""
+        private const val TEST_RECORD_IDENTIFIER = "123"
+        private const val TEST_VERIFICATION_LINK = "a8c21c01-e6ee-4f07-86c0-c260f9ab2d12"
     }
 
 }

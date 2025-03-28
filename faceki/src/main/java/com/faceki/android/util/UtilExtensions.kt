@@ -37,7 +37,7 @@ import java.util.concurrent.TimeUnit
 
 internal fun OkHttpClient.Builder.addLoggingInterceptorIfInDevelopmentMode(): OkHttpClient.Builder {
     addInterceptor(HttpLoggingInterceptor().apply {
-        level = HttpLoggingInterceptor.Level.BODY
+        level = HttpLoggingInterceptor.Level.BASIC
     })
     return this
 }

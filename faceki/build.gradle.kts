@@ -111,7 +111,7 @@ afterEvaluate {
 
                 groupId = "com.github.faceki"
                 artifactId = "blaze-android-sdk"
-                version = "1.1"
+                version = "2.0"
             }
         }
     }

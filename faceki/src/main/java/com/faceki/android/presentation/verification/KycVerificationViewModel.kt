@@ -26,17 +26,20 @@ class KycVerificationViewModel(
         selfieImage: File,
         documents: List<DocumentData>
     ) {
+
         viewModelScope.launch(Dispatchers.IO) {
             _screenState.value = ScreenState(
                 isLoading = true
             )
 
             val resource = kycVerificationRepository.verifyKyc(
+                verificationLink = AppConfig.verificationLink ?:"",
                 workflowId = AppConfig.workflowId ?: "",
                 recordIdentifier = AppConfig.recordIdentifier,
                 selfieImage = selfieImage,
                 documents = documents
             )
+
 
             when (resource) {
                 is Resource.Loading -> {

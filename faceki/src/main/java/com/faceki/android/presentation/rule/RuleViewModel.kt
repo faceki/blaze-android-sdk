@@ -27,7 +27,7 @@ class RuleViewModel(
             )
 
             when (val resource = ruleRepository.getWorkflowRules(
-                workflowId = AppConfig.workflowId!!,
+              verificationLink   = AppConfig.verificationLink!!,
                 fetchFromRemote = fetchFromRemote
             )) {
                 is Resource.Loading -> {}

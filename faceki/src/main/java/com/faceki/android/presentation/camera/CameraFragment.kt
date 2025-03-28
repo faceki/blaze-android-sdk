@@ -3,6 +3,8 @@ package com.faceki.android.presentation.camera
 import android.Manifest
 import android.content.Context
 import android.content.res.Configuration
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.GradientDrawable
@@ -44,6 +46,9 @@ import com.faceki.android.presentation.LottieAnimationType
 import com.faceki.android.presentation.base.BaseFragment
 import com.faceki.android.presentation.image.ImageQualityViewModel
 import com.faceki.android.presentation.image.ImageQualityViewModelFactory
+import com.faceki.android.presentation.rule.RuleViewModel
+import com.faceki.android.presentation.rule.RuleViewModelFactory
+
 import com.faceki.android.presentation.welcome.TokenViewModel
 import com.faceki.android.presentation.welcome.TokenViewModelFactory
 import com.faceki.android.util.ANIMATION_FAST_MILLIS
@@ -69,6 +74,7 @@ import com.faceki.android.util.showPermissionExplainDialog
 import com.faceki.android.util.showSnackBar
 import com.faceki.android.util.showToast
 import kotlinx.coroutines.launch
+import java.io.ByteArrayOutputStream
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -139,6 +145,10 @@ internal class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCame
 
     private val imageQualityViewModel: ImageQualityViewModel by viewModels {
         ImageQualityViewModelFactory()
+    }
+
+    private val ruleViewModel: RuleViewModel by viewModels {
+        RuleViewModelFactory()
     }
 
     private lateinit var cameraPermissionLauncher: ActivityResultLauncher<String>
@@ -266,11 +276,11 @@ internal class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCame
         }
 
         lifecycleScope.launch {
-            tokenViewModel.screenState.flowWithLifecycle(
+            ruleViewModel.screenState.flowWithLifecycle(
                 lifecycle, Lifecycle.State.STARTED
             ).collect { state ->
                 if (state.isLoading) showLoading() else hideLoading()
-                if (state.isSuccess.isTrue() && state.token.isNotNull().isTrue()) {
+                if (state.isSuccess.isTrue()) {
 
                     val captureItem = if (isCaptureSelfie) {
                         selfieCaptureItem
@@ -278,15 +288,15 @@ internal class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCame
                         captureItems[capturePosition]
                     }!!
 
-                    if (token == null || token != state.token) {
 
-                        token = state.token
+
+
                         if (captureItem is CaptureItem.Selfie) {
                             navigateToNextAction()
                         } else {
                             imageQualityViewModel.checkImageQuality(capturedImage!!)
                         }
-                    }
+
                 }
             }
         }
@@ -313,11 +323,7 @@ internal class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCame
                 showToast("Please connect to internet")
                 return@launch
             }
-            val clientId = AppConfig.clientId!!
-            val clientSecret = AppConfig.clientSecret!!
-            tokenViewModel.getBearerToken(
-                clientId = clientId, clientSecret = clientSecret
-            )
+
         }
     }
 
@@ -682,94 +688,129 @@ internal class CameraFragment : BaseFragment<FragmentCameraBinding>(FragmentCame
                                 }
                             }
 
-                            override fun onCaptureSuccess(image: ImageProxy) {
-                                Log.d(AppConfig.TAG, "Photo capture succeeded")
+                           override fun onCaptureSuccess(image: ImageProxy) {
+    Log.d(AppConfig.TAG, "Photo capture succeeded")
 
-                                val buffer = image.planes[0].buffer
-                                val bytes = ByteArray(buffer.remaining())
-                                buffer.get(bytes)
+    val buffer = image.planes[0].buffer
+    val bytes = ByteArray(buffer.remaining())
+    buffer.get(bytes)
 
+    // Convert the byte array to a Bitmap
+    val originalBitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
 
-                                // Launch coroutine to save the image
-                                lifecycleScope.launch {
+    // Correct the orientation of the Bitmap
+    val rotationDegrees = image.imageInfo.rotationDegrees
+    val correctedBitmap = rotateBitmap(originalBitmap, rotationDegrees)
 
+    // Get the original dimensions
+    val originalWidth = correctedBitmap.width
+    val originalHeight = correctedBitmap.height
 
-                                    // Create time stamped name
+    // Target dimensions (1080p)
+    val targetWidth = 1920
+    val targetHeight = 1080
 
-                                    val captureItem = if (isCaptureSelfie) {
-                                        selfieCaptureItem
-                                    } else {
-                                        captureItems[capturePosition]
-                                    }!!
+    // Calculate the scaling factor while maintaining aspect ratio
+    val scaleFactor = min(
+        targetWidth.toFloat() / originalWidth,
+        targetHeight.toFloat() / originalHeight
+    )
 
-                                    val prefix = when (captureItem) {
-                                        is CaptureItem.DocumentFrontImage -> {
-                                            captureItem.name
-                                        }
+    // Only scale down if the original image is larger than the target dimensions
+    val finalWidth = if (scaleFactor < 1) (originalWidth * scaleFactor).toInt() else originalWidth
+    val finalHeight = if (scaleFactor < 1) (originalHeight * scaleFactor).toInt() else originalHeight
 
-                                        is CaptureItem.DocumentBackImage -> {
-                                            captureItem.name
-                                        }
+    // Resize the Bitmap
+    val resizedBitmap = Bitmap.createScaledBitmap(
+        correctedBitmap,
+        finalWidth,
+        finalHeight,
+        true
+    )
 
-                                        is CaptureItem.Selfie -> {
-                                            Constants.SELFIE
-                                        }
-                                    }
+    // Compress the resized Bitmap to reduce file size
+    val outputStream = ByteArrayOutputStream()
+    resizedBitmap.compress(Bitmap.CompressFormat.JPEG, 90, outputStream) // Adjust quality (80%)
+    val compressedBytes = outputStream.toByteArray()
 
-                                    val name = prefix + SimpleDateFormat(
-                                        FILENAME, Locale.US
-                                    ).format(System.currentTimeMillis()) + ".jpg"
+    // Launch coroutine to save the image
+    lifecycleScope.launch {
+        val captureItem = if (isCaptureSelfie) {
+            selfieCaptureItem
+        } else {
+            captureItems[capturePosition]
+        }!!
 
-                                    capturedImage =
-                                        FileManager.saveCapturedImage(bytes, name)
-                                            .let { savedFile ->
-                                                Log.d(
-                                                    AppConfig.TAG,
-                                                    "Photo capture succeeded, saved at: ${savedFile.absolutePath}"
-                                                )
-                                                savedFile
-                                            }
+        val prefix = when (captureItem) {
+            is CaptureItem.DocumentFrontImage -> captureItem.name
+            is CaptureItem.DocumentBackImage -> captureItem.name
+            is CaptureItem.Selfie -> Constants.SELFIE
+        }
 
+        val name = prefix + SimpleDateFormat(
+            FILENAME, Locale.US
+        ).format(System.currentTimeMillis()) + ".jpg"
 
-                                    val documentData = when (captureItem) {
-                                        is CaptureItem.DocumentFrontImage -> {
-                                            DocumentData(
-                                                key = captureItem.name,
-                                                documentSide = DocumentSide.FRONT
-                                            )
-                                        }
+        capturedImage = FileManager.saveCapturedImage(compressedBytes, name).let { savedFile ->
+            Log.d(AppConfig.TAG, "Photo capture succeeded, saved at: ${savedFile.absolutePath}")
+            savedFile
+        }
 
-                                        is CaptureItem.DocumentBackImage -> {
-                                            DocumentData(
-                                                key = captureItem.name,
-                                                documentSide = DocumentSide.BACK
-                                            )
-                                        }
+        val documentData = when (captureItem) {
+            is CaptureItem.DocumentFrontImage -> DocumentData(
+                key = captureItem.name,
+                documentSide = DocumentSide.FRONT
+            )
+            is CaptureItem.DocumentBackImage -> DocumentData(
+                key = captureItem.name,
+                documentSide = DocumentSide.BACK
+            )
+            is CaptureItem.Selfie -> {
+                AppConfig.selfieImagePath = capturedImage?.absolutePath
+                null
+            }
+        }
 
-                                        is CaptureItem.Selfie -> {
-                                            AppConfig.selfieImagePath = capturedImage?.absolutePath
-                                            null
-                                        }
-                                    }
+        if (documentData != null) {
+            capturedImage?.absolutePath?.let {
+                AppConfig.addDocument(
+                    documentData = documentData.copy(imagePath = it)
+                )
+            }
+        }
 
-                                    if (documentData != null) {
-                                        capturedImage?.absolutePath?.let {
-                                            AppConfig.addDocument(
-                                                documentData = documentData.copy(
-                                                    imagePath = it
-                                                )
-                                            )
-                                        }
-                                    }
-                                    getToken()
+        val captureItemx = if (isCaptureSelfie) {
+            selfieCaptureItem
+        } else {
+            captureItems[capturePosition]
+        }!!
 
-                                    runOnUiThread {
-                                        binding.btnCapture.isEnabled = true
-                                    }
-                                }
-                                image.close() // Close the image
+        if (captureItemx is CaptureItem.Selfie) {
+            navigateToNextAction()
+        } else {
+            imageQualityViewModel.checkImageQuality(capturedImage!!)
+        }
 
-                            }
+        runOnUiThread {
+            binding.btnCapture.isEnabled = true
+        }
+    }
+    image.close() // Close the image
+}
+
+/**
+ * Rotates a Bitmap by the specified degrees.
+ *
+ * @param bitmap The original Bitmap.
+ * @param degrees The rotation angle in degrees.
+ * @return The rotated Bitmap.
+ */
+private fun rotateBitmap(bitmap: Bitmap, degrees: Int): Bitmap {
+    if (degrees == 0) return bitmap
+    val matrix = android.graphics.Matrix()
+    matrix.postRotate(degrees.toFloat())
+    return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
+}
                         })
 
                     // We can only change the foreground Drawable using API level 23+ API

@@ -23,7 +23,7 @@ internal interface FaceKiApi {
 
     @GET(WORKFLOW_RULES)
     suspend fun getWorkflowRules(
-        @Query("workflowId") workflowId: String,
+        @Query("link") verificationLink: String,
     ): Response<WorkflowRulesResponseDto>
 
 
@@ -31,6 +31,7 @@ internal interface FaceKiApi {
     @Multipart
     suspend fun verifyKyc(
         @Part("workflowId") workflowId: RequestBody,
+        @Part("link") verificationLink: RequestBody,
         @Part("record_identifier") recordIdentifier: RequestBody?,
         @Part documents: List<MultipartBody.Part>,
     ): Response<ResponseBody>
@@ -38,7 +39,7 @@ internal interface FaceKiApi {
     companion object {
         const val BASE_URL = "https://sdk.faceki.com/"
         const val GENERATE_TOKEN = "auth/api/access-token"
-        const val WORKFLOW_RULES = "api/v3/workflows/rules"
-        const val KYC_VERIFICATION = "api/v3/kyc_verification"
+        const val WORKFLOW_RULES = "api/v3/workflows/rulesbylink"
+        const val KYC_VERIFICATION = "api/v3/kyc_verification/requestbylink"
     }
 }
