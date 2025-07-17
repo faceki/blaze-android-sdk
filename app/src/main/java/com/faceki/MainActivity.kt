@@ -1,6 +1,7 @@
 package com.faceki
 
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
@@ -18,6 +19,8 @@ class MainActivity : AppCompatActivity() {
         ) {
             when (result) {
                 is VerificationResult.ResultOk -> {
+                    findViewById<TextView>(R.id.tv_result).text = result.toString()
+                    Log.e("TAG", "handleKycResponse: ===========================$result", )
                     Toast.makeText(this@MainActivity, "ResultOk", Toast.LENGTH_SHORT).show()
                 }
 
@@ -25,11 +28,11 @@ class MainActivity : AppCompatActivity() {
                     Toast.makeText(this@MainActivity, "ResultCanceled", Toast.LENGTH_SHORT).show()
                 }
             }
+            Log.e("TAG", "handleKycResponse: ===========================$json", )
 
             Toast.makeText(this@MainActivity, "kycResponseHandler $json", Toast.LENGTH_SHORT).show()
         }
     }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -57,7 +60,7 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         private const val TEST_RECORD_IDENTIFIER = "123"
-        private const val TEST_VERIFICATION_LINK = "a8c21c01-e6ee-4f07-86c0-c260f9ab2d12"
+        private const val TEST_VERIFICATION_LINK = "b1031cff-4ecd-46dd-9aae-a2be2336a123"
     }
 
 }

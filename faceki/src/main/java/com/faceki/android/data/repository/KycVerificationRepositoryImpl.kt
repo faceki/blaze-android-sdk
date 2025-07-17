@@ -84,8 +84,12 @@ internal class KycVerificationRepositoryImpl(
 
                 val status = jsonObject.getAsJsonPrimitive("status").asBoolean
                 val responseCode = jsonObject.getAsJsonPrimitive("code").asInt
-                val isAccepted = jsonObject.getAsJsonObject("result")
-                    ?.getAsJsonPrimitive("decision")?.asString == "ACCEPTED"
+                val isAccepted = jsonObject.get("result")
+                    ?.takeIf { it.isJsonObject }
+                    ?.asJsonObject
+                    ?.get("decision")
+                    ?.takeIf { it.isJsonPrimitive && it.asJsonPrimitive.isString }
+                    ?.asJsonPrimitive?.asString == "ACCEPTED"
 
 
                 when (responseCode) {
@@ -114,6 +118,26 @@ internal class KycVerificationRepositoryImpl(
                                 responseCode = KYCErrorCodes.PLEASE_TRY_AGAIN,
                                 jsonBody = jsonObject.toString(),
                                 errorMessage = "Verification failed. Please try the verification process again."
+                            )
+                        )
+                    }
+
+                    KYCErrorCodes.SELFIE_LIVENESS_FAILED -> {
+                        Resource.Success(
+                            VerificationResponse(
+                                responseCode = KYCErrorCodes.SELFIE_LIVENESS_FAILED,
+                                jsonBody = jsonObject.toString(),
+                                errorMessage = "Verification failed. Please try the verification process again."
+                            )
+                        )
+                    }
+
+                    KYCErrorCodes.DOCUMENT_FACE_MATCH_FAILED -> {
+                        Resource.Success(
+                            VerificationResponse(
+                                responseCode = KYCErrorCodes.DOCUMENT_FACE_MATCH_FAILED,
+                                jsonBody = jsonObject.toString(),
+                                errorMessage = "Verification failed For Face Mismatch. Please try the verification process again."
                             )
                         )
                     }

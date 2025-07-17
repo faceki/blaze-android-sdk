@@ -22,5 +22,8 @@ object KYCErrorCodes {
     const val FAIL_TO_GENERATE_LINK = 8016
     const val KYC_VERIFICATION_LIMIT_REACHED = 8017
     const val SELFIE_MULTIPLE_FACES = 8018
-    const val FACE_BLUR = 8019
+    const val SELFIE_LIVENESS_FAILED = 5004
+    const val DOCUMENT_FACE_MATCH_FAILED = 5005
+    const val NOT_ENOUGH_WALLET_CREDIT = 5003
+
 }

@@ -129,7 +129,7 @@ internal class LottieAnimationFragment :
                                     Constants.ARG_LOTTIE_ANIMATION_TYPE, LottieAnimationType.SUCCESS
                                 )
                             })
-                    } else if (state.responseCode == KYCErrorCodes.PLEASE_TRY_AGAIN || state.responseCode == KYCErrorCodes.FACE_CROPPED || state.responseCode == KYCErrorCodes.FACE_TOO_CLOSED || state.responseCode == KYCErrorCodes.FACE_NOT_FOUND || state.responseCode == KYCErrorCodes.FACE_CLOSED_TO_BORDER || state.responseCode == KYCErrorCodes.FACE_TOO_SMALL || state.responseCode == KYCErrorCodes.POOR_LIGHT) {
+                    } else if (state.responseCode == KYCErrorCodes.PLEASE_TRY_AGAIN || state.responseCode == KYCErrorCodes.FACE_CROPPED || state.responseCode == KYCErrorCodes.FACE_TOO_CLOSED || state.responseCode == KYCErrorCodes.FACE_NOT_FOUND || state.responseCode == KYCErrorCodes.FACE_CLOSED_TO_BORDER || state.responseCode == KYCErrorCodes.FACE_TOO_SMALL || state.responseCode == KYCErrorCodes.POOR_LIGHT || state.responseCode == KYCErrorCodes.SELFIE_LIVENESS_FAILED) {
                         AppConfig.selfieImagePath=null
                         navController.previousBackStackEntry?.savedStateHandle?.set(
                             Constants.ARG_VERIFICATION_RESPONSE, state.errorMessage
